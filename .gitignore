@@ -1,7 +1,13 @@
+# Python virtual environment
 env/
+
+# PyCharm IDE files
 .idea/
+
+# Python bytecode-compiled cache files
 __pycache__/
 
+# Additional data / output files
 **.png
 **.jpg
 **.gif
