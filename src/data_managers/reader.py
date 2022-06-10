@@ -2,14 +2,13 @@ from glob import glob
 from os.path import normpath
 import pandas as pd
 from pandas import DataFrame
-from pickle import loads
-from models.neural_network.mlp import MLP
+import tensorflow as tf
+from src.neural_network.mlp import MLP
 
 
 def load_model(filename: str) -> MLP or None:
     try:
-        with open(f"model/{filename}", 'rb') as f:
-            return loads(f.read())
+        return tf.keras.models.load_model(f"models/{filename}")
     except FileNotFoundError:
         print("File with given name does not exist!")
         return None
@@ -21,7 +20,7 @@ def load_data(col_names: list, file_type: str = 'dynamic', dynamic_names: list =
     _output = DataFrame()
 
     if file_type == 'dynamic':
-        files = [f"data/*/{d}.xlsx" for d in dynamic_names]
+        files = [f"data/{d}.xlsx" for d in dynamic_names]
     else:
         files = [normpath(i) for i in glob(f"data/*/*{file_type}*.xlsx")]
 
