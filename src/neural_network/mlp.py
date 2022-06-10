@@ -41,7 +41,7 @@ class MLP(Base):
     @staticmethod
     def calculate_mean_squared_err(result: DataFrame, test_output: DataFrame):
         mse = []
-        for x, y in result[0], result[1]:
+        for x, y in zip(result[0], result[1]):
             mse.append(mean_squared_error([x, y], [DataFrame(test_output['reference__x']).iloc[0],
                                                    DataFrame(test_output['reference__y']).iloc[0]]))
         return np.sqrt(mse)
