@@ -26,9 +26,9 @@ class MLP(Base):
         res = self.network.predict(measurement)
         error_mlp = self.calculate_mean_squared_err(res, reference, choice="result")
         error_meas = self.calculate_mean_squared_err(measurement, reference)
-        print(sum(error_meas) / len(error_meas))
-        print(sum(error_mlp) / len(error_mlp))
-        print(np.mean(weights, axis=1))
+        print("Mean square error of the measured values", sum(error_meas) / len(error_meas))
+        print("Mean square error of the corrected values", sum(error_mlp) / len(error_mlp))
+        print("Arithmetic mean of the input weights [measurement / reference]", np.mean(weights, axis=1))
         return error_mlp, error_meas
 
     @staticmethod
