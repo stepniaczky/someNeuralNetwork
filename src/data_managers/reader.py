@@ -34,11 +34,7 @@ def load_data(col_names: list, file_type: str = 'dynamic', dynamic_names: list =
 
 
 def read_excel(file, col_names) -> tuple[DataFrame, DataFrame]:
-    data = pd.read_excel(file, sheet_name=0)
-    to_drop = []
-    for i, row in data.iterrows():
-        if row['success'] is False:
-            to_drop.append(i)
-
-    data = data.drop(data.index[to_drop])
+    data = [pd.read_excel(file, sheet_name=0)]
+    data = pd.concat(data, ignore_index=True)
+    data = data.dropna()
     return data[col_names[:2]], data[col_names[2:]]
