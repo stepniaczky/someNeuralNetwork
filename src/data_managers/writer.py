@@ -1,6 +1,9 @@
+import shutil
 from pandas import DataFrame
-from os import mkdir, rmdir
+from os import mkdir
 from os.path import exists
+import numpy as np
+from matplotlib import pyplot as plt
 
 
 def create_dir(first_dir: str, second_dir: str = None):
@@ -9,23 +12,33 @@ def create_dir(first_dir: str, second_dir: str = None):
     if second_dir is not None:
         path = f"{first_dir}/{second_dir}"
         if exists(path):
-            rmdir(path)
-        else:
-            mkdir(path)
+            shutil.rmtree(path)
+        mkdir(path)
 
 
-def to_plot(dir_name: str, mse: DataFrame, weights: DataFrame):
-    ...
+def to_plot(dir_name: str, mse: np.array, meas: np.array):
+    for errors, label in zip([mse, meas], ["corrected", "measured"]):
+        y = 1. * np.arange(len(errors)) / (len(errors) - 1)
+        plt.plot(errors, y, label=label)
+    plt.legend()
+    plt.savefig(f"results/{dir_name}/distribution_error.jpg", dpi=500)
+    plt.show()
+
+    plt.bar(np.arange(0, len(mse)), mse)
+    plt.xlabel('Number of measurement')
+    plt.ylabel('RMSE')
+    plt.savefig(f"results/{dir_name}/root_mean_square_error.jpg", dpi=500)
+    plt.show()
 
 
-def to_xlsx(dir_name: str, mse: DataFrame) -> None:
-    mse.to_excel(f"results/{dir_name}/error_distribution.xlsx")
+def to_xlsx(dir_name: str, mse: np.array) -> None:
+    DataFrame(mse).to_excel(f"results/{dir_name}/distribution_error.xlsx")
 
 
-def save_results(dir_name: str, mse: DataFrame, weights: DataFrame) -> None:
+def save_results(dir_name: str, mse: DataFrame, meas) -> None:
     create_dir("results", dir_name)
     to_xlsx(dir_name, mse)
-    to_plot(dir_name, mse, weights)
+    to_plot(dir_name, mse, meas)
 
 
 def save_model(neural_network, filename: str):

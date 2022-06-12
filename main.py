@@ -1,4 +1,4 @@
-from src.data_managers.reader import load_data, load_model
+from src.data_managers.reader import load_model, load_data
 from src.data_managers.writer import save_results, save_model
 from src.neural_network.mlp import MLP
 
@@ -19,12 +19,13 @@ if __name__ == '__main__':
             print("Invalid value!")
 
     if choice == 1:
-        (in_stat, out_stat) = load_data(col_names=['data__coordinates__x', 'data__coordinates__y',
-                                                   'reference__x', 'reference__y'], file_type="stat")
+        print("Data is getting loaded...")
+        (measurement, reference) = load_data(col_names=['data__coordinates__x', 'data__coordinates__y',
+                                                        'reference__x', 'reference__y'], file_type="stat")
 
         model = MLP()
         print("Model training has started...")
-        model.train((in_stat, out_stat))
+        model.train((measurement, reference))
         print("Saving the learned model...")
         filename = input("Enter a file name: ")
         while save_model(model, filename) == "err":
@@ -37,9 +38,10 @@ if __name__ == '__main__':
             filename = input("Enter a file name of trained model: ")
             model = load_model(filename)
 
-        (in_dyn, out_dyn) = load_data(col_names=['data__coordinates__x', 'data__coordinates__y',
-                                                 'reference__x', 'reference__y'], dynamic_names=dn8)
+        print("Data is getting loaded...")
+        (measurement, reference) = load_data(col_names=['data__coordinates__x', 'data__coordinates__y',
+                                                        'reference__x', 'reference__y'], dynamic_names=dn8)
 
-        model8 = MLP(model)
-        (mse, weights) = model8.test((in_dyn, out_dyn))
-        save_results(filename, mse, weights)
+        model = MLP(model)
+        (error_mlp, error_meas) = model.test((measurement, reference))
+        save_results(filename, error_mlp, error_meas)

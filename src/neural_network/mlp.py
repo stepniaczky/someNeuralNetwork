@@ -3,6 +3,7 @@ from pandas import DataFrame
 import tensorflow as tf
 from sklearn.metrics import mean_squared_error
 import numpy as np
+import math
 
 
 class MLP(Base):
@@ -11,21 +12,24 @@ class MLP(Base):
         self.network = self.create_network() if network is None else network
 
     def train(self, data: tuple) -> None:
-        training_input_tensor = tf.convert_to_tensor((data[0].astype('float32')) / 10000)
-        training_output_tensor = tf.convert_to_tensor((data[1].astype('float32')) / 10000)
-        self.network.compile(optimizer=tf.keras.optimizers.Adam(clipvalue=1.0),
+        measurement = (data[0].astype('float32')) / 10000
+        reference = (data[1].astype('float32')) / 10000
+        self.network.compile(optimizer=tf.keras.optimizers.Adam(),
                              loss=tf.keras.losses.MeanSquaredError(),
                              metrics=['accuracy'])
-        self.network.fit(training_input_tensor, training_output_tensor, epochs=5)
+        self.network.fit(measurement, reference, epochs=100)
 
     def test(self, data: tuple) -> tuple:
-        testing_input_tensor = tf.convert_to_tensor((data[0].astype('float32')) / 10000)
-        testing_output_tensor = tf.convert_to_tensor((data[1].astype('float32')) / 10000)
-        self.network.evaluate(testing_input_tensor, testing_output_tensor)
+        measurement = (data[0].astype('float32')) / 10000
+        reference = (data[1].astype('float32')) / 10000
         weights = self.network.layers[0].get_weights()[0]
-        result = self.network.predict(testing_input_tensor) * 10000
-        mse = self.calculate_mean_squared_err(DataFrame(result), data[1])
-        return mse, weights
+        res = self.network.predict(measurement)
+        error_mlp = self.calculate_mean_squared_err(res, reference, choice="result")
+        error_meas = self.calculate_mean_squared_err(measurement, reference)
+        print(sum(error_meas) / len(error_meas))
+        print(sum(error_mlp) / len(error_mlp))
+        print(np.mean(weights, axis=1))
+        return error_mlp, error_meas
 
     @staticmethod
     def create_network():
@@ -39,9 +43,11 @@ class MLP(Base):
         return network
 
     @staticmethod
-    def calculate_mean_squared_err(result: DataFrame, test_output: DataFrame):
+    def calculate_mean_squared_err(measurement: DataFrame, reference: DataFrame, choice=None):
+        reference = reference.values.tolist()
         mse = []
-        for x, y in zip(result[0], result[1]):
-            mse.append(mean_squared_error([x, y], [DataFrame(test_output['reference__x']).iloc[0],
-                                                   DataFrame(test_output['reference__y']).iloc[0]]))
-        return np.sqrt(mse)
+        measurement = measurement.tolist() if choice == "result" else measurement.values.tolist()
+        for i in range(len(measurement)):
+            value = mean_squared_error([measurement[i][0], measurement[i][1]], [reference[i][0], reference[i][1]])
+            mse.append(math.sqrt(value))
+        return np.sort(mse) * 10000
