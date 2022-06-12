@@ -16,8 +16,8 @@ def load_model(filename: str) -> MLP or None:
 
 def load_data(col_names: list, file_type: str = 'dynamic', dynamic_names: list = None) \
         -> tuple[DataFrame, DataFrame]:
-    _input = DataFrame()
-    _output = DataFrame()
+    measurement = DataFrame()
+    reference = DataFrame()
 
     if file_type == 'dynamic':
         files = [f"data/{d}.xlsx" for d in dynamic_names]
@@ -25,12 +25,12 @@ def load_data(col_names: list, file_type: str = 'dynamic', dynamic_names: list =
         files = [normpath(i) for i in glob(f"data/*/*{file_type}*.xlsx")]
 
     for file in files:
-        (in_file, out_file) = read_excel(file, col_names)
-        _input = pd.concat([_input, in_file])
-        _output = pd.concat([_output, out_file])
+        (m_file, r_file) = read_excel(file, col_names)
+        measurement = pd.concat([measurement, m_file])
+        reference = pd.concat([reference, r_file])
 
     print(f"{file_type.capitalize()} data has been successfully loaded.")
-    return _input, _output
+    return measurement, reference
 
 
 def read_excel(file, col_names) -> tuple[DataFrame, DataFrame]:
