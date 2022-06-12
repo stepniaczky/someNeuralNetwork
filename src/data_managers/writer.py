@@ -17,17 +17,12 @@ def create_dir(first_dir: str, second_dir: str = None):
 
 
 def to_plot(dir_name: str, mse: np.array, meas: np.array):
+    mse = np.sort(mse)
     for errors, label in zip([mse, meas], ["corrected", "measured"]):
         y = 1. * np.arange(len(errors)) / (len(errors) - 1)
         plt.plot(errors, y, label=label)
     plt.legend()
     plt.savefig(f"results/{dir_name}/distribution_error.jpg", dpi=500)
-    plt.show()
-
-    plt.bar(np.arange(0, len(mse)), mse)
-    plt.xlabel('Number of measurement')
-    plt.ylabel('RMSE')
-    plt.savefig(f"results/{dir_name}/root_mean_square_error.jpg", dpi=500)
     plt.show()
 
 
