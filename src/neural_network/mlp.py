@@ -24,16 +24,22 @@ class MLP(Base):
         reference = (data[1].astype('float32')) / 10000
         weights = self.network.layers[0].get_weights()[0]
         res = self.network.predict(measurement)
-        error_mlp = self.calculate_mean_squared_err(res, reference, choice="result")
+        error_mlp = self.calculate_mean_squared_err(
+            res, reference, choice="result")
         error_meas = self.calculate_mean_squared_err(measurement, reference)
-        print("Mean square error of the measured values =", sum(error_meas) / len(error_meas))
-        print("Mean square error of the corrected values =", sum(error_mlp) / len(error_mlp))
-        print("Arithmetic mean of the input weights [measurement / reference] =", np.mean(weights, axis=1))
+        print("Mean square error of the measured values =",
+              sum(error_meas) / len(error_meas))
+        print("Mean square error of the corrected values =",
+              sum(error_mlp) / len(error_mlp))
+        print(
+            "Arithmetic mean of the input weights [measurement / reference] =", np.mean(weights, axis=1))
         return error_mlp, error_meas
 
     @staticmethod
     def create_network():
         network = tf.keras.models.Sequential()
+        network.add(tf.keras.layers.Dense(512, activation='relu'))
+        network.add(tf.keras.layers.Dense(256, activation='relu'))
         network.add(tf.keras.layers.Dense(128, activation='relu'))
         network.add(tf.keras.layers.Dense(64, activation='relu'))
         network.add(tf.keras.layers.Dense(32, activation='relu'))
@@ -48,6 +54,7 @@ class MLP(Base):
         mse = []
         measurement = measurement.tolist() if choice == "result" else measurement.values.tolist()
         for i in range(len(measurement)):
-            value = mean_squared_error([measurement[i][0], measurement[i][1]], [reference[i][0], reference[i][1]])
+            value = mean_squared_error([measurement[i][0], measurement[i][1]], [
+                                       reference[i][0], reference[i][1]])
             mse.append(math.sqrt(value))
         return np.sort(mse) * 10000
