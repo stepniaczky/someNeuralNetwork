@@ -3,8 +3,6 @@ from src.data_managers.writer import save_results, save_model
 from src.neural_network.mlp import MLP
 
 if __name__ == '__main__':
-    dn8 = ['f8/f8_1p', 'f8/f8_1z', 'f8/f8_2p', 'f8/f8_2z', 'f8/f8_3p', 'f8/f8_3z']
-    dn10 = ['f10/f10_1p', 'f10/f10_1z', 'f10/f10_2p', 'f10/f10_2z', 'f10/f10_3p', 'f10/f10_3z']
 
     choice: int = 0
     while choice not in [1, 2]:
@@ -40,7 +38,7 @@ if __name__ == '__main__':
 
         print("Data is getting loaded...")
         (measurement, reference) = load_data(col_names=['data__coordinates__x', 'data__coordinates__y',
-                                                        'reference__x', 'reference__y'], dynamic_names=dn8)
+                                                        'reference__x', 'reference__y'], file_type="dynamic")
 
         model = MLP(model)
         (error_mlp, error_meas) = model.test((measurement, reference))
