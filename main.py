@@ -40,6 +40,7 @@ if __name__ == '__main__':
         (measurement, reference) = load_data(col_names=['data__coordinates__x', 'data__coordinates__y',
                                                         'reference__x', 'reference__y'], file_type="dynamic")
 
+        print("Model testing has started...")
         model = MLP(model)
         (error_mlp, error_meas) = model.test((measurement, reference))
         save_results(filename, error_mlp, error_meas)

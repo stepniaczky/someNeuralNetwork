@@ -33,11 +33,14 @@ def save_results(dir_name: str, mse: DataFrame, meas) -> None:
     create_dir("results", dir_name)
     to_xlsx(dir_name, mse)
     to_plot(dir_name, mse, meas)
+    print("Results have been saved successfully.")
 
 
 def save_model(neural_network, filename: str):
     create_dir("models")
     try:
         neural_network.network.save(f"models/{filename}")
+        print("Model has been saved successfully.")
     except FileExistsError:
+        print("An error occurred while saving the model!")
         return "err"
