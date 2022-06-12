@@ -6,7 +6,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 
-def create_dir(first_dir: str, second_dir: str = None):
+def create_dir(first_dir: str, second_dir: str = None) -> None:
     if not exists(first_dir):
         mkdir(first_dir)
     if second_dir is not None:
@@ -16,8 +16,7 @@ def create_dir(first_dir: str, second_dir: str = None):
         mkdir(path)
 
 
-def to_plot(dir_name: str, mse: np.array, meas: np.array):
-    mse = np.sort(mse)
+def to_plot(dir_name: str, mse: np.array, meas: np.array) -> None:
     for errors, label in zip([mse, meas], ["corrected", "measured"]):
         y = 1. * np.arange(len(errors)) / (len(errors) - 1)
         plt.plot(errors, y, label=label)
